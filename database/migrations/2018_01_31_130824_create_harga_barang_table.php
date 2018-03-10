@@ -17,7 +17,7 @@ class CreateHargaBarangTable extends Migration
             $table->increments('id_entry');
             $table->string('nama_barang', 100);
             $table->unsignedInteger('harga_barang');
-            $table->unsignedInteger('waktu_catat');
+            $table->unsignedBigInteger('waktu_catat');
             $table->string('nama_tempat', 100);
             $table->double('latitude', 8, 5);
             $table->double('longitude', 8, 5);

@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use App\HargaBarang;
+use App\Barang;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,4 +24,8 @@ Route::post('harga', function(Request $request) {
 	foreach ($responses as $response) { 
 		HargaBarang::create($response);
 	};
+});
+
+Route::get('barang', function() {
+	return Barang::all();
 });
