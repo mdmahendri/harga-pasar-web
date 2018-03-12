@@ -4,12 +4,12 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class HargaBarang extends Model
+class HargaKonsumen extends Model
 {
 	/**
      * The table associated with the model
      */
-    protected $table = 'harga_barang';
+    protected $table = 'harga_konsumen';
 
     /**
      * Indicates if the model should be timestamped
@@ -20,8 +20,8 @@ class HargaBarang extends Model
      * The attributes that are mass assignable.
      */
     protected $fillable = [
-    	'nama_barang', 
-    	'harga_barang',
+    	'id_barang', 
+    	'harga',
     	'waktu_catat',
     	'nama_tempat',
     	'latitude',

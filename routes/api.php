@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
-use App\HargaBarang;
+use App\HargaKonsumen;
 use App\Barang;
 
 /*
@@ -22,7 +22,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::post('harga', function(Request $request) {
 	$responses = $request->all();
 	foreach ($responses as $response) { 
-		HargaBarang::create($response);
+		HargaKonsumen::create($response);
 	};
 });
 
