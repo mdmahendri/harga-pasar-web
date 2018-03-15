@@ -29,3 +29,5 @@ Route::post('harga', function(Request $request) {
 Route::get('barang', function() {
 	return Barang::all();
 });
+
+Route::apiResource('pasar', 'API\PasarController');
