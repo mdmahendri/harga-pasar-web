@@ -45,16 +45,8 @@ class PasarController extends Controller
         // make API call to Google Map if result < 5
         if ($pasarCollection->count() < 5) {
 
-            // $container = [];
-            // $history = \GuzzleHttp\Middleware::history($container);
-
-            // $stack = \GuzzleHttp\HandlerStack::create();
-            // // Add the history middleware to the handler stack.
-            // $stack->push($history);
-
             $client = new \GuzzleHttp\Client([
                 'base_uri' => 'https://maps.googleapis.com/maps/api/'
-                // ,'handler' => $stack
             ]);
 
             $response = $client->request('GET', 'place/nearbysearch/json',
@@ -66,12 +58,6 @@ class PasarController extends Controller
                     'location' => $latLng
                 ], 'debug' => false]
             );
-
-            // // Iterate over the requests and responses
-            // foreach ($container as $transaction) {
-            //     echo (string) $transaction['request']->getBody();
-            // }
-            // die();
 
             Pasar::fromGoogleMap($response);
 

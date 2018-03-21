@@ -12,6 +12,16 @@ class Pasar extends Model
     protected $table = 'pasar';
 
     /**
+     * Indicates if the IDs are auto-incrementing
+     */
+    public $incrementing = false;
+
+    /**
+     * The "type" of the auto-incrementing ID
+     */
+    protected $keyType = 'string';
+
+    /**
      * The storage format of the model's date columns.
      * use unix epoch
      */
@@ -21,7 +31,7 @@ class Pasar extends Model
      * The attributes that are mass assignable.
      */
     protected $fillable = [
-        'map_id',
+        'id',
         'nama',
         'alamat',
         'latitude',
@@ -34,8 +44,8 @@ class Pasar extends Model
     public static function fromGoogleMap($response) {
         $pasarArray = json_decode($response->getBody())->results;
     	foreach ($pasarArray as $pasar) {
-    		$goblok = static::firstOrCreate(
-    			['map_id' => $pasar->id],
+    		$save = static::firstOrCreate(
+    			['id' => $pasar->id],
     			[
                     'nama' => $pasar->name,
                     'alamat' => $pasar->vicinity,
