@@ -22,10 +22,9 @@ class Pasar extends Model
     protected $keyType = 'string';
 
     /**
-     * The storage format of the model's date columns.
-     * use unix epoch
+     * Indicates if the model should be timestamped
      */
-    protected $dateFormat = 'U';
+    public $timestamps = false;
 
     /**
      * The attributes that are mass assignable.
@@ -35,7 +34,8 @@ class Pasar extends Model
         'nama',
         'alamat',
         'latitude',
-        'longitude'
+        'longitude',
+        'version'
     ];
 
     /**
@@ -44,23 +44,43 @@ class Pasar extends Model
     public static function fromGoogleMap($response) {
         $pasarArray = json_decode($response->getBody())->results;
     	foreach ($pasarArray as $pasar) {
-    		$save = static::firstOrCreate(
-    			['id' => $pasar->id],
-    			[
-                    'nama' => $pasar->name,
-                    'alamat' => $pasar->vicinity,
-                    'latitude' => $pasar->geometry->location->lat,
-                    'longitude' => $pasar->geometry->location->lng
-                ]
-    		);
+            $row = array(
+                'id' => $pasar->id,
+                'nama' => $pasar->name,
+                'alamat' => $pasar->vicinity,
+                'latitude' => $pasar->geometry->location->lat,
+                'longitude' => $pasar->geometry->location->lng
+            );
+            self::updateVersion($row);
     	}
     }
 
     public static function near($lat, $lng) {
         return self::selectRaw(
-            'id, nama, alamat, latitude, longitude, (6371 * acos (cos ( radians(?) ) * cos(radians(latitude) ) * cos(radians(longitude) - radians(?) ) + sin ( radians(?) ) * sin( radians(latitude) ))) AS distance', [$lat, $lng, $lat])
+            'id, nama, alamat, latitude, longitude, version, (6371 * acos (cos ( radians(?) ) * cos(radians(latitude) ) * cos(radians(longitude) - radians(?) ) + sin ( radians(?) ) * sin( radians(latitude) ))) AS distance', [$lat, $lng, $lat])
         ->having('distance', '<', 30)
         ->get();
+    }
+
+    public static function updateVersion($row) {
+
+        if (self::where('id', $row['id'])->exists()) {
+            self::where('id', $row['id'])
+                ->where('version', $row['version'])
+                ->update([
+                    'nama' => $row['nama'],
+                    'alamat' => $row['alamat'],
+                    'latitude' => $row['latitude'],
+                    'longitude' => $row['longitude'],
+                    'version' => ($row['version'] + 1)
+                ]);
+
+        } else {
+            // from android, create new version 0
+            $row['version'] = 1;
+            self::create($row);
+        }
+
     }
 
 }

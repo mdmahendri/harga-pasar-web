@@ -19,8 +19,8 @@ class CreatePasarTable extends Migration
             $table->string('alamat', 150);
             $table->decimal('latitude', 10, 7);
             $table->decimal('longitude', 10, 7);
-            $table->integer('created_at');
-            $table->integer('updated_at');
+            $table->integer('version');
+            $table->primary('id');
         });
     }
 

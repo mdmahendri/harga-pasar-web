@@ -27,7 +27,9 @@ class PasarController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $responses = $request->all();
+        foreach ($responses as $row) Pasar::updateVersion($row);
+        return response('success', 200);
     }
 
     /**
@@ -67,7 +69,7 @@ class PasarController extends Controller
         }
 
         return response($pasarCollection->toJson(), 200)
-                    ->header('Content-Type', 'application/json');
+            ->header('Content-Type', 'application/json');
     }
 
     /**
