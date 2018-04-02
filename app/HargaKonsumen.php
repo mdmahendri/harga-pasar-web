@@ -25,6 +25,7 @@ class HargaKonsumen extends Model
     	'waktu_catat',
     	'nama_tempat',
     	'latitude',
-    	'longitude'
+    	'longitude',
+        'mail'
     ];
 }

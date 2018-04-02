@@ -24,6 +24,7 @@ Route::post('harga', function(Request $request) {
 	foreach ($responses as $response) { 
 		HargaKonsumen::create($response);
 	};
+	return response('success', 200);
 });
 
 Route::get('barang', function() {
