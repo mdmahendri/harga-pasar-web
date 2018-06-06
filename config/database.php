@@ -51,9 +51,9 @@ return [
             'collation' => 'utf8mb4_unicode_ci',
             'prefix' => '',
             'strict' => true,
-            'engine' => null,
+            'engine' => null
             // set custom options for 00webhost
-            'options' => [PDO::ATTR_EMULATE_PREPARES => true]
+            //'options' => [PDO::ATTR_EMULATE_PREPARES => true]
         ],
 
         'pgsql' => [
