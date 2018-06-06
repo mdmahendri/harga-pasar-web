@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use App\HargaKonsumen;
 use App\Barang;
+use App\Account;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,10 +22,40 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::post('harga', function(Request $request) {
 	$responses = $request->all();
-	foreach ($responses as $response) { 
-		HargaKonsumen::create($response);
-	};
+	$plus = count($responses);
+
+	DB::beginTransaction();
+	try {
+		//
+		foreach ($responses as $response) { 
+			HargaKonsumen::create($response);
+		};
+
+		// update the points
+		$mail = $responses[0]['mail'];
+		$account = Account::find($mail);
+		if ($account) {
+			$account->points = $account->points + $plus;
+			$account->save();
+		} else {
+			$account = new Account;
+			$account->mail = $mail;
+			$account->points = $plus;
+			$account->save();
+		}
+
+	} catch (Excepton $e) {
+		DB::rollback();
+		return $e;
+	}
+
+	DB::commit();
 	return response('success', 200);
+});
+
+Route::get('points/{mail}', function($mail){
+	$account = Account::where('mail', $mail)->first();
+	return response($account? $account->points : 0, 200);
 });
 
 Route::get('barang', function() {

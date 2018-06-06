@@ -21,7 +21,7 @@ class CreateHargaKonsumenTable extends Migration
             $table->string('nama_tempat', 100);
             $table->double('latitude', 8, 5);
             $table->double('longitude', 8, 5);
-            $table->string('mail', 20);
+            $table->string('mail', 30);
         });
     }
 

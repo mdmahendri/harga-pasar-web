@@ -16,7 +16,7 @@ class CreatePasarTable extends Migration
         Schema::create('pasar', function (Blueprint $table) {
             $table->string('id', 50);
             $table->string('nama', 100);
-            $table->string('alamat', 150);
+            $table->text('alamat');
             $table->decimal('latitude', 10, 7);
             $table->decimal('longitude', 10, 7);
             $table->integer('version');
