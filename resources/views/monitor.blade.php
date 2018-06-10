@@ -32,6 +32,11 @@ body {
     top: 100%;
     left: 0;
 }
+
+/* Prevent long list data */
+#panel-harga {
+    height: 408px;
+}
 </style>
 
 <script type="text/javascript" src="/js/d3.min.js"></script>
