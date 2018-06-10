@@ -72,7 +72,7 @@ body {
                             </div>
                             <div class="col-9">
                                 <input class="form-input" type="date" id="input-date"
-                                value="{{ Carbon\Carbon::now()->toDateString() }}">
+                                value="{{ Carbon\Carbon::now()->subDay()->format('Y-m-d') }}">
                             </div>
                         </div>
                     </form>
@@ -92,66 +92,11 @@ body {
                         <figure class="avatar avatar-lg">
                             <img id="prov-img" src="/img/prov/blank.png" alt="Avatar">
                         </figure>
-                        <div id="prov-nama" class="panel-title h5 mt-10">Kalimantan Timur</div>
+                        <div id="prov-nama" class="panel-title h5 mt-10">-</div>
                     </div>
-                    <div class="panel-body">
-                        <div class="tile tile-centered">
-                            <div class="tile-content">
-                                <div class="tile-title">Beras</div>
-                                <div class="tile-subtitle">IR III</div>
-                            </div>
-                            <div class="tile-action">
-                                10000
-                            </div>
-                        </div>
-                        <div class="tile tile-centered">
-                            <div class="tile-content">
-                                <div class="tile-title">Daging Ayam Kampung</div>
-                                <div class="tile-subtitle">Tanpa Jeroan</div>
-                            </div>
-                            <div class="tile-action">
-                                10000
-                            </div>
-                        </div>
-                        <div class="tile tile-centered">
-                            <div class="tile-content">
-                                <div class="tile-title">Bawang Merah</div>
-                                <div class="tile-subtitle">Bersih Sedang</div>
-                            </div>
-                            <div class="tile-action">
-                                10000
-                            </div>
-                        </div>
-                        <div class="tile tile-centered">
-                            <div class="tile-content">
-                                <div class="tile-title">Gabus Kering</div>
-                                <div class="tile-subtitle">Besar</div>
-                            </div>
-                            <div class="tile-action">
-                                10000
-                            </div>
-                        </div>
-                        <div class="tile tile-centered">
-                            <div class="tile-content">
-                                <div class="tile-title">Minyak Goreng</div>
-                                <div class="tile-subtitle">Tanpa Merk (Kuning)</div>
-                            </div>
-                            <div class="tile-action">
-                                10000
-                            </div>
-                        </div>
-                        <div class="tile tile-centered">
-                            <div class="tile-content">
-                                <div class="tile-title">Gula Pasir</div>
-                                <div class="tile-subtitle">SHS/Putih</div>
-                            </div>
-                            <div class="tile-action">
-                                10000
-                            </div>
-                        </div>
+                    <div id="panel-harga" class="panel-body">
                     </div>
                     <div class="panel-footer">
-                        <button class="btn btn-primary btn-block">Percobaan Pasbeli</button>
                     </div>
                 </div>
             </div>
@@ -163,6 +108,9 @@ body {
 
 @section('endjs')
 <script>
+    // init reset
+    resetSelection();
+
     // membuat tooltip untuk peta
     var mapTip = d3.tip()
         .attr('class', 'd3-tip')
@@ -176,9 +124,28 @@ body {
         .domain([1900, 5000, 15000, 35000])
         .range(['#B3E5FC', '#4FC3F7', '#03A9F4', '#0288D1', '#01579B']);
 
+    // render map and its function
     d3.queue()
-        .defer(d3.json, "/map/indo-quantized.json")
-        .await(visualize)
+        .defer(d3.json, '/map/indo-quantized.json')
+        .await(visualize);
+
+    // onchange date reset map
+    document.getElementById('input-date').onchange = function() {
+        resetSelection();
+    }
+
+    function resetSelection() {
+        d3.select('#map')
+            .selectAll('.map-path')
+            .classed('selected-path', false)
+            .attr('fill', 'blue');
+
+        document.getElementById('prov-nama').innerHTML = '-';
+        document.getElementById('prov-img').src = '/img/prov/blank.png';
+        document.getElementById('panel-harga').innerHTML =
+            '<h4 class="text-center">Tidak ada data</h4>'
+            + '<p>Pilih tangal dan provinsi untuk menampilkan data</p>';
+    }
 
     function visualize(error, data) {
 
@@ -221,13 +188,65 @@ body {
                         .classed('selected-path', true);
 
                     //tampilkan profil provinsi
-                    changeProvProfile(d.properties.ID_1);
-                    //update chart lain
-                    updateBarChart(d.properties.ID_1);
+                    changeProvData(d.properties.NAME_1);
                 }
             })
             .on('mouseover', mapTip.show)
             .on('mouseout', mapTip.hide);
+    }
+
+    function changeProvData(name) {
+        toggleLoading(true, name);
+
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+            if (this.readyState == 4) {
+                var result = JSON.parse(this.responseText);
+                toggleLoading(false);
+                renderResponse(result);
+            }
+        }
+        var date = new Date(document.getElementById('input-date').value);
+        date = date.getTime();
+        var slug = name.toLowerCase().replace(new RegExp(' ', 'g'), '-');
+        xhr.open('GET', '/api/data/' + name + '/' + date, true);
+        xhr.send();
+
+        document.getElementById('prov-nama').innerHTML = name;
+        document.getElementById('prov-img').src = '/img/prov/' + slug + '.png';
+    }
+
+    function toggleLoading(activate, prov = '') {
+        if (activate) {
+            var load = '<div class="loading loading-lg"></div>';
+            load += '<div class="text-center">Silahkan tunggu</div>';
+            load += '<p class="text-center">Memproses data ' + prov + '</p>';
+            document.getElementById('panel-harga').innerHTML = load;
+        } else {
+            document.getElementById('panel-harga').innerHTML = '';
+        }
+    }
+
+    function renderResponse(result) {
+        var load = '';
+
+        if (result.status == 'fail') {
+            load = '<div class="text-center">Data tidak tersedia</div>';
+            load += '<p class="text-center">' + result.data + '</p>';
+        } else {
+            result.data.forEach(function(entry) {
+                load += '<div class="tile tile-centered">'
+                +          '<div class="tile-content">'
+                +              '<div class="tile-title">' + entry.nama + '</div>'
+                +              '<div class="tile-subtitle">' + entry.kualitas + '</div>'
+                +          '</div>'
+                +          '<div class="tile-action">'
+                +              Math.round(entry.harga)
+                +          '</div>'
+                +      '</div>';
+            });
+        }
+        document.getElementById('panel-harga').innerHTML = load;
     }
 </script>
 @endsection

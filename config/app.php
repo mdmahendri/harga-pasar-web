@@ -138,6 +138,7 @@ return [
 
     'providers' => [
 
+        Geocoder\Laravel\Providers\GeocoderService::class,
         /*
          * Laravel Framework Service Providers...
          */
@@ -191,6 +192,8 @@ return [
     */
 
     'aliases' => [
+
+        'Geocoder' => Geocoder\Laravel\Facades\Geocoder::class,
 
         'App' => Illuminate\Support\Facades\App::class,
         'Artisan' => Illuminate\Support\Facades\Artisan::class,

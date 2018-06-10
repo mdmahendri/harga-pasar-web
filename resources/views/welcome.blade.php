@@ -83,7 +83,9 @@
                 </div>
 
                 <div class="links">
-                    <a href="https://github.com/md.mahendri">GitHub</a>
+                    <a href="/moinitoring">Monitoring</a>
+                    <a href="https://play.google.com/store/apps/details?id=com.mahendri.pasbeli">Android</a>
+                    <a href="https://github.com/mdmahendri">GitHub</a>
                 </div>
             </div>
         </div>

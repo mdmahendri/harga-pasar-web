@@ -22,6 +22,9 @@ class CreateHargaKonsumenTable extends Migration
             $table->double('latitude', 8, 5);
             $table->double('longitude', 8, 5);
             $table->string('mail', 30);
+            $table->string('provinsi', 50);
+
+            $table->index('provinsi');
         });
     }
 

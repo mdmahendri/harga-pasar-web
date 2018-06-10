@@ -1,5 +1,7 @@
 <?php
 
+use App\HargaKonsumen;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -17,4 +19,9 @@ Route::get('/', function () {
 
 Route::get('/monitor', function() {
     return view('monitor');
+});
+
+Route::get('reversegeo', function() {
+    $number = HargaKonsumen::whereNull('provinsi')->count();
+    return view('revgeo', ['count' => $number]);
 });
