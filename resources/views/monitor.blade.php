@@ -48,7 +48,7 @@ body {
 @section('content')
 <div class="container">
     <div class="columns">
-        <div class="column col-12">
+        <div class="column col-6 col-mx-auto">
             <div class="tile">
                 <div class="tile-icon">
                 <img src="/img/icon.svg" class="icon">
