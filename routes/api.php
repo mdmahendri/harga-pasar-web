@@ -129,7 +129,7 @@ Route::get('data/{loc}/{date}', function($loc, $date) {
 
 	if ($results->isEmpty()) {
 		$last_data = HargaKonsumen::where('provinsi', $loc)
-			->orderBy('harga', 'desc')
+			->orderBy('waktu_catat', 'desc')
 			->first();
 		if($last_data) {
 			$last_data = date('d M Y', $last_data->waktu_catat / 1000);
