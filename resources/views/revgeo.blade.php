@@ -20,7 +20,7 @@
             <span id="num-proc">0</span>/{{ $count }}
         </div>
         <div class="column col-2">
-            <button id="btn-act" class="btn btn-sm btn-primary">Lakukan Rev Geo</button>
+            <button id="btn-act" class="btn btn-sm btn-primary {{ $count? '' : 'disabled' }}">Lakukan Rev Geo</button>
         </div>
     </div>
 </div>
