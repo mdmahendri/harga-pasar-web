@@ -114,14 +114,13 @@ Route::get('revgeo', function() {
 	}
 });
 
-Route::get('data/{loc}/{date}', function($loc, $date) {
+Route::get('data/{loc}/{start}/{end}', function($loc, $start, $end) {
 	$status = '';
-	$one_day = 24 * 60 * 60 * 1000;
 	$loc = ucwords(str_replace('-', ' ', $loc));
 
 	$results = DB::table('harga_konsumen')
 		->where('provinsi', $loc)
-		->whereBetween('waktu_catat', [$date, $date+$one_day])
+		->whereBetween('waktu_catat', [$start, $end])
 		->join('barang', 'barang.id_barang', '=', 'harga_konsumen.id_barang')
 		->selectRaw('barang.nama, barang.kualitas, avg(harga) as harga')
 		->groupBy('barang.nama', 'barang.kualitas')

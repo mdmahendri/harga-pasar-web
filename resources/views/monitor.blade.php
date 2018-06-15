@@ -39,9 +39,14 @@ body {
 }
 </style>
 
+<!-- used to config map -->
 <script type="text/javascript" src="/js/d3.min.js"></script>
 <script type="text/javascript" src="/js/topojson.min.js"></script>
 <script type="text/javascript" src="/js/d3-tip.js"></script>
+
+<!-- used to make date range picker. no dependency, lightweight -->
+<link rel="stylesheet" href="/css/flatpickr.min.css" />
+<script type="text/javascript" src="/js/flatpickr.min.js"></script>
 
 @endsection
 
@@ -75,10 +80,8 @@ body {
                             <div class="col-3">
                                 <label class="form-label" for="input-date">Pilih tanggal</label>
                             </div>
-                            <div class="col-9">
-                                <input class="form-input" type="date" id="input-date"
-                                value="{{ Carbon\Carbon::now()->subDay()->format('Y-m-d') }}">
-                            </div>
+                            <input id="input-date" class="col-9 form-input" placeholder="Click this..."
+                            readonly>
                         </div>
                     </form>
                 </div>
@@ -116,6 +119,20 @@ body {
     // init reset
     resetSelection();
 
+    // config range date picker
+    const fp = flatpickr(document.getElementById('input-date'), {
+        mode: 'range',
+        dateFormat: 'd-m-Y',
+        defaultDate: [
+            "{{ Carbon\Carbon::now()->startOfMonth()->format('d-m-Y') }}", 
+            "{{ Carbon\Carbon::now()->format('d-m-Y') }}"
+        ],
+        maxDate: 'today',
+        onChange: function(selectedDates, dateStr, instance) {
+            resetSelection();
+        }
+    });
+
     // membuat tooltip untuk peta
     var mapTip = d3.tip()
         .attr('class', 'd3-tip')
@@ -133,11 +150,6 @@ body {
     d3.queue()
         .defer(d3.json, '/map/indo-quantized.json')
         .await(visualize);
-
-    // onchange date reset map
-    document.getElementById('input-date').onchange = function() {
-        resetSelection();
-    }
 
     function resetSelection() {
         d3.select('#map')
@@ -211,10 +223,10 @@ body {
                 renderResponse(result);
             }
         }
-        var date = new Date(document.getElementById('input-date').value);
-        date = date.getTime();
+        const start = fp.selectedDates[0].getTime();
+        const end = fp.selectedDates[1].getTime();
         var slug = name.toLowerCase().replace(new RegExp(' ', 'g'), '-');
-        xhr.open('GET', '/api/data/' + name + '/' + date, true);
+        xhr.open('GET', '/api/data/' + name + '/' + start + '/' + end, true);
         xhr.send();
 
         document.getElementById('prov-nama').innerHTML = name;
